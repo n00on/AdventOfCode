@@ -13,6 +13,6 @@ def getScore(rounds, strategy):
     return score
 
 
-print(getScore(rounds, lambda e, m: ord(m) - ord('X')))
+print(f"Part A: {getScore(rounds, lambda e, m: ord(m) - ord('X'))}")
 
-print(getScore(rounds, lambda e, s: (e - 1 + ord(s) - ord('X')) % 3))
+print(f"Part A: {getScore(rounds, lambda e, s: (e - 1 + ord(s) - ord('X')) % 3)}")
