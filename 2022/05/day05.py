@@ -5,7 +5,7 @@ startconf = lines[0].split("\n")
 startconf.pop()
 
 # Parse stack
-stacks = []
+stacks = [[]]
 for i in range(1, len(startconf[len(startconf) - 1]), 4):
     stacks.append([])
 
@@ -19,22 +19,22 @@ for s in stacks:
     stacks9001.append(s.copy())
 
 # Perform all shuffles
-shuffles = [[[int(s) for s in r.split(" to ")] for r in l[5:].split(" from ")] for l in lines[1].split("\n")]
+shuffles = [[int(d) for d in l.split(" ") if d.isdigit()] for l in lines[1].split("\n")]
 for s in shuffles:
     move = []
-    for i in range(s[0][0]):
-       move.append(stacks9001[s[1][0]-1].pop())
-       stacks[s[1][1]-1].append(stacks[s[1][0]-1].pop())
+    for i in range(s[0]):
+       move.append(stacks9001[s[1]].pop())
+       stacks[s[2]].append(stacks[s[1]].pop())
 
-    for i in range(s[0][0]):
-        stacks9001[s[1][1]-1].append(move.pop())
+    for i in range(s[0]):
+        stacks9001[s[2]].append(move.pop())
 
 # Build answers
 ans = ""
 ans9001 = ""
-for si in range(len(stacks)):
-    ans += stacks[si][len(stacks[si]) - 1]
-    ans9001 += stacks9001[si][len(stacks9001[si]) - 1]
+for si in range(1, len(stacks)):
+    ans += stacks[si].pop()
+    ans9001 += stacks9001[si].pop()
 
 print(f"Part One: {ans}")
 print(f"Part One: {ans9001}")
