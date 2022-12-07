@@ -1,50 +1,50 @@
 with open("input.txt") as f:
     terminal = f.read().split("\n")
 
-class Tree:
-    def __init__(self, name, parent, size=0):
-        self.parent = parent
-        self.children = []
+class Dir:
+    def __init__(self, name: str, parent,  size=0):
+        self.parent = parent # alternative name dotdot?
+        self.subdirs = []
         self.name = name
         self.size = size
 
-root = Tree("/", None)
 terminal.pop(0)
+root = Dir("/", None)
 
 part1 = 0
 
-cDir = root
+cwd = root
 for line in terminal:
     match line.split():
         case ["$", "cd", ".."]:
-            if cDir.size <= 100000:
-                part1 += cDir.size
-            cDir.parent.size += cDir.size
-            cDir = cDir.parent
+            if cwd.size <= 100000:
+                part1 += cwd.size
+            cwd.parent.size += cwd.size
+            cwd = cwd.parent
         case ["$", "cd", target]:
-            cDir = Tree(target, cDir)
-            cDir.parent.children.append(cDir)
+            cwd = Dir(target, cwd)
+            cwd.parent.subdirs.append(cwd)
         case ["$", "ls"]:
             pass
         case ["dir", dirname]:
             pass
         case [filesize, filename]:
-            cDir.size += int(filesize)
+            cwd.size += int(filesize)
 
-while cDir != root:
-    cDir.parent.size += cDir.size
-    cDir = cDir.parent
+while cwd != root:
+    cwd.parent.size += cwd.size
+    cwd = cwd.parent
 
 
 print(f"Part One: {part1}")
 
-totalspace  = 70000000
-neededspace = 30000000
-
-def findSmallestDir(dir: Tree, size: int):
-    if (dir.size > size):
-        return min([findSmallestDir(node,size) for node in dir.children] + [dir.size])
+def findSmallestDir(dir: Dir, minSize: int):
+    if (dir.size >= minSize):
+        return min([findSmallestDir(d, minSize) for d in dir.subdirs] + [dir.size])
     else: 
         return totalspace
 
-print(f"Part Two: {findSmallestDir(root, neededspace - (totalspace - root.size))}")
+totalspace = 70000000
+requiredspace = 30000000
+
+print(f"Part Two: {findSmallestDir(root, requiredspace - (totalspace - root.size))}")
