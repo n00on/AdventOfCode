@@ -4,31 +4,22 @@ with open("input.txt") as f:
 items = []
 operations = []
 tests = []
-
 bigNhelper = 1
 
 for m in monkeys:
-    newitems = []
-    start = m[1].split(" ")
-    for i in range(4, len(start) - 1):
-        newitems.append(int(start[i][:len(start[i]) - 1]))
-    newitems.append(int(start[len(start) - 1]))
-    items.append(newitems)
+    items.append([int(w) for w in m[1].split(": ")[1].split(", ")])
 
-    ops = m[2].split(" = ")
-    operations.append(ops[1])
+    operations.append(m[2].split(" = ")[1])
 
+    # (divisor, idTrue, idFalse)
     tests.append((int(m[3].split(" by ")[1]), int(m[4].split(" monkey ")[1]), int(m[5].split(" monkey ")[1])))
     bigNhelper *= int(m[3].split(" by ")[1])
 
-backup = [[i for i in m] for m in items]
-
-def simulate(divide = True, rounds = 20):
-    count = [0 for m in monkeys]
-    for round in range(rounds):
-        for id, mit in enumerate(items):
-
-            for item in mit:
+def worry(divide = True, rounds = 20):
+    count = [0 for _ in monkeys]
+    for _ in range(rounds):
+        for id, mitems in enumerate(items):
+            for item in mitems:
                 count[id] += 1
                 old = item
                 item = eval(operations[id])
@@ -47,7 +38,9 @@ def simulate(divide = True, rounds = 20):
     count.sort(reverse = True)
     return count[0]*count[1]
 
-print(f"Part One: {simulate()}")
-items = backup
-print(f"Part Two: {simulate(False, 10000)}")
+backup = [[i for i in m] for m in items]
+print(f"Part One: {worry()}")
 
+
+items = backup
+print(f"Part Two: {worry(False, 10000)}")
