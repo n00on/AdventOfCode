@@ -4,50 +4,42 @@ with open("input.txt") as f:
 width = len(input[0])
 height = len(input)
 
-xgoal = 0
-ygoal = 0
-
+start = (0, 0)
+goal = (0, 0)
 heightmap = []
-q = []
-dist = [[width * height for x in range(width)] for y in range(height)]
-
-for y1 in range(height):
+for y in range(height):
     line = []
-    for x1 in range(width):
-        q.append((x1, y1))
-
-        if input[y1][x1] == 'S':
-            dist[y1][x1] = 0
+    for x in range(width):
+        if input[y][x] == 'S':
+            start = (x, y)
             line.append(0)
-        elif input[y1][x1] == 'E':
-            xgoal = x1
-            ygoal = y1
+        elif input[y][x] == 'E':
+            goal = (x, y)
             line.append(ord('z') - ord('a'))
         else: 
-            line.append(ord(input[y1][x1]) - ord('a'))
+            line.append(ord(input[y][x]) - ord('a'))
     heightmap.append(line)
 
-def djikstra(q, dist):
-    while len(q) > 0:
-        minx = q[0][0]
-        miny = q[0][1]
-        for x1, y1 in q:
-            if dist[y1][x1] < dist[miny][minx]:
-                minx = x1
-                miny = y1
 
-        q.remove((minx, miny))
+def djikstra(dist):
+    q = [(x,y) for x in range(width) for y in range(height)]
+    while len(q) > 0:
+        min = (q[0][0], q[0][1])
+        for x, y in q:
+            if dist[y][x] < dist[min[1]][min[0]]:
+                min = (x, y)
+
+        q.remove((min[0], min[1]))
 
         for dirx, diry in [(1,0), (0,1), (-1,0), (0,-1)]:
-            x1 = minx + dirx
-            y1 = miny + diry
-            if (x1, y1) not in q:
-                continue
-            alt = dist[miny][minx] + 1
+            x, y = min[0] + dirx, min[1] + diry
+            if (x, y) in q:
+                alt = dist[min[1]][min[0]] + 1
+                if heightmap[y][x] <= heightmap[min[1]][min[0]] + 1 and alt < dist[y][x]:
+                    dist[y][x] = alt
 
-            if heightmap[y1][x1] <= heightmap[miny][minx] + 1 and alt < dist[y1][x1]:
-                dist[y1][x1] = alt
-    return dist[ygoal][xgoal]
+    return dist[goal[1]][goal[0]]
+    
 
-print(f"Part One: {djikstra([(x,y) for x,y in q], [[d for d in l] for l in dist])}")
-print(f"Part One: {djikstra([(x,y) for x,y in q], [[0 if d == 0 else width*height for d in l] for l in heightmap])}")
+print(f"Part One: {djikstra([[0 if c == 'S' else width * height for c in row] for row in input])}")
+print(f"Part Two: {djikstra([[0 if h == 0 else width*height for h in row] for row in heightmap])}")
