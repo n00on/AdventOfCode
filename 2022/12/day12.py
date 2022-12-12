@@ -31,15 +31,14 @@ def djikstra(dist):
 
         q.remove((min[0], min[1]))
 
+        alt = dist[min[1]][min[0]] + 1
         for dirx, diry in [(1,0), (0,1), (-1,0), (0,-1)]:
             x, y = min[0] + dirx, min[1] + diry
-            if (x, y) in q:
-                alt = dist[min[1]][min[0]] + 1
-                if heightmap[y][x] <= heightmap[min[1]][min[0]] + 1 and alt < dist[y][x]:
-                    dist[y][x] = alt
+            if (x, y) in q and heightmap[y][x] <= heightmap[min[1]][min[0]] + 1 and alt < dist[y][x]:
+                dist[y][x] = alt
 
     return dist[goal[1]][goal[0]]
-    
+
 
 print(f"Part One: {djikstra([[0 if c == 'S' else width * height for c in row] for row in input])}")
 print(f"Part Two: {djikstra([[0 if h == 0 else width*height for h in row] for row in heightmap])}")
