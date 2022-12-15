@@ -1,52 +1,61 @@
 with open("input.txt") as f:
     input = f.read().split("\n")
 
-start = (500, 0)
+source = (500, 0)
 rock = set()
+
+def sgn(i : int) -> int:
+    return i // abs(i) if i != 0 else 0
 
 max_rock = 0
 for path in input:
     points = path.split(" -> ")
-    for i in range(len(points) - 1):
-        s = [int(c) for c in points[i].split(",")]
-        e = [int(c) for c in points[i + 1].split(",")]
-
-        dir = (e[0] - s[0], e[1] - s[1])
-        dir = [0 if d == 0 else d / abs(d) for d in dir]
-
-        x = s[0]
-        y = s[1]
-        while x != e[0] or y != e[1]:
-            rock.add((x,y))
+    start = tuple([int(c) for c in points[0].split(",")])
+    for i in range(1, len(points)):
+        end = tuple([int(c) for c in points[i].split(",")])
+        dir = (sgn(end[0] - start[0]), sgn(end[1] - start[1]))
+    
+        x = start[0]
+        y = start[1]
+        while (x, y) != end:
+            rock.add((x, y))
             x += dir[0]
             y += dir[1]
-            max_rock = y if y > max_rock else max_rock
-        rock.add((x,y))
+            max_rock = max(y, max_rock)
+        rock.add((x, y))
+        start = end
 
 def simulate(rock : set) -> int:
     count = 0
     while(True):
-        sand = start
-        moved = True
-        while (moved):
-            moved = False
-            for dirx, diry in [(0,1), (-1,1), (1,1)]:
-                next = (sand[0] + dirx, sand[1] + diry)
-                if next not in rock:
-                    moved = True
-                    sand = next
-                    break
-            if sand[1] > max_rock + 1:
-                return count
+        sand = move_sand(rock)
+        if sand[1] > max_rock:
+            return count # sand fell into the void
         count += 1
         rock.add(sand)
-        if sand == start:
-            return count
+        if sand == source:
+            return count # sand blocks the source
+
+def move_sand(rock : set) -> (int):
+    sand = source
+    moved = True
+    while (moved):
+        moved = False
+        for dirx, diry in [(0,1), (-1,1), (1,1)]:
+            next = (sand[0] + dirx, sand[1] + diry)
+            if next not in rock:
+                moved = True
+                sand = next
+                break
+        if sand[1] > max_rock:
+            return sand
+    return sand
 
 part1 = simulate(rock)
 print(f"Part One: {part1}")
 
+max_rock += 2
 # Profit off of results from Part One
-for x in range(int(500 - max_rock * 2), int(500 + max_rock * 2)):
-    rock.add((x, max_rock + 2))
+for x in range(source[0] - max_rock - 1, source[0] + max_rock + 1):
+    rock.add((x, max_rock))
 print(f"Part Two: {part1 + simulate(rock)}")
