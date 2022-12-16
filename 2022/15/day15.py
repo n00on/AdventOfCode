@@ -3,7 +3,7 @@ with open("input.txt") as f:
     sensors = [tuple([ int(i) for i in c[0].split("x=")[1].split(", y=")]) for c in input]
     beacons = [tuple([ int(i) for i in c[1].split(", y=")]) for c in input]
 
-def calcLine(row = 10):
+def calcLine(row = 10) -> int:
     taken = set()
     for sensor, beacon in zip(sensors, beacons):
         diff = abs(sensor[1] - beacon[1]) + abs(sensor[0] - beacon[0])
@@ -30,11 +30,10 @@ def findHole(row, bound = 20):
         if s <= last + 1:
             last = max(last, e)
         else:
-            return (s-1) * bound + row
+            return ((s-1) * bound + row)
     return -1
 
-def part2(bound = 20):
-    tuning_frequency = -1
+def part2(bound = 20) -> int:
     for i in range(bound):
         tuning_frequency = findHole(i, bound)
         if tuning_frequency != -1:
