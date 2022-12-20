@@ -10,8 +10,7 @@ def part1(numbers : list) -> int:
             i += 1
             continue
 
-        newpos = i + n
-        newpos %= len(nums)-1
+        newpos = (i + n) % (len(nums) - 1)
 
         nums.pop(i)
         nums.insert(newpos, (n, True))
