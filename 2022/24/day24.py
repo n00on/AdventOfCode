@@ -4,18 +4,18 @@ with open("input.txt") as f:
 height = len(initial)
 width = len(initial[0])
 
-directions = [(1,0), (0,1), (-1,0), (0,-1), (0,0)]
+directions = ((1,0), (0,1), (-1,0), (0,-1), (0,0))
 
 start = (0,1)
 goal = (height - 1, width - 2)
 
-def printMap(map : list[list[bool]]) -> None:
-    for row in map:
-        line = ""
-        for tile in row:
-            line += '#' if tile else '.'
-        print(line)
-    print()
+def calcTripTime(start : (int), goal : (int), minute = 0) -> int:
+    pos = set([start])
+    while goal not in pos:
+        minute += 1
+        board = getBoard(minute)
+        pos = getNextPositions(pos, board)
+    return minute
 
 def getBoard(i : int) -> list[list[bool]]:
     board = [[tile == '#' for tile in row] for row in initial]
@@ -25,38 +25,40 @@ def getBoard(i : int) -> list[list[bool]]:
             tile = initial[y][x]
             if tile == '.':
                 continue
-            yi, xi = y, x
-            match tile:
-                case '>':
-                    xi = (x-1 + i) % (width -2) + 1
-                case 'v':
-                    yi = (y-1 + i) % (height-2) + 1
-                case '<':
-                    xi = (x-1 - i) % (width -2) + 1
-                case '^':
-                    yi = (y-1 - i) % (height-2) + 1
+            yi, xi = getBlizzardPosition(i, x, y, tile)
             board[yi][xi] = True
     return board
 
-def getTrip(start : (int), goal : (int), minute = 0) -> int:
-    pos = set([start])
-    while goal not in pos:
-        minute += 1
-        board = getBoard(minute)
+def getBlizzardPosition(i : int, x : int, y : int, dir : str) -> (int):
+    match dir:
+        case '>':
+            x = (x-1 + i) % (width -2) + 1
+        case 'v':
+            y = (y-1 + i) % (height-2) + 1
+        case '<':
+            x = (x-1 - i) % (width -2) + 1
+        case '^':
+            y = (y-1 - i) % (height-2) + 1
+    return y, x
 
-        nextpos = set()
-        for y, x in pos:
-            for yd, xd in directions:
-                yt, xt = y+yd, x+xd
-                if 0 <= yt < height and 0 <= xt < width and not board[yt][xt]:
-                    nextpos.add((yt, xt))
-        
-        pos = nextpos
-    return minute
+def getNextPositions(pos : list[(int)], board : list[list[bool]]) -> list[(int)]:
+    nextpos = set()
+    for y, x in pos:
+        for yd, xd in directions:
+            yt, xt = y+yd, x+xd
+            if 0 <= yt < height and 0 <= xt < width and not board[yt][xt]:
+                nextpos.add((yt, xt))
+    return nextpos
 
-minutes = getTrip(start, goal)
+def printMap(map : list[list[bool]]) -> None:
+    for row in map:
+        line = "".join(['#' if tile else '.' for tile in row])
+        print(line)
+    print()
+
+minutes = calcTripTime(start, goal)
 print(f"Part One: {minutes}")
 
-minutes = getTrip(goal, start, minutes)
-minutes = getTrip(start, goal, minutes)
+minutes = calcTripTime(goal, start, minutes)
+minutes = calcTripTime(start, goal, minutes)
 print(f"Part Two: {minutes}")
