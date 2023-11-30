@@ -22,3 +22,4 @@ defmodule Day01 do
 end
 
 Day01.read()
+

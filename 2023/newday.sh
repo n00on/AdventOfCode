@@ -1,8 +1,8 @@
 #/bin/bash
 
 day="${1:-$(date +%d)}"
-mkdir $day;
-cd $day;
+mkdir "$day";
+cd "$day";
 echo "defmodule Day$day do
   
   def read() do
@@ -26,5 +26,6 @@ echo "defmodule Day$day do
 
 end
 
-Day$day.read()" > day$day.ex;
+Day$day.read()
+" > "day$day.ex";
 touch "input.txt";
