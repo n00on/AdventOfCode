@@ -6,15 +6,9 @@ cd "$day";
 echo "defmodule Day$day do
   
   def read() do
-      case File.read(\"input.txt\") do
-      {:ok, binary} ->
-        parsed = String.split(binary)
-        IO.puts(\"Part 1: \" <> inspect(part_1(parsed)))
-        IO.puts(\"Part 2: \" <> inspect(part_2(parsed)))
-
-      {:error, reason} ->
-        IO.puts(reason)
-    end
+    parsed = File.read!("input.txt") |> String.split()
+    IO.puts("Part 1: " <> inspect(part_1(parsed)))
+    IO.puts("Part 2: " <> inspect(part_2(parsed)))
   end
 
   def part_1(parsed) do

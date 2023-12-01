@@ -1,15 +1,9 @@
 defmodule Day01 do
 
   def read() do
-    case File.read("input.txt") do
-      {:ok, binary} ->
-        parsed = String.split(binary)
-        IO.puts("Part 1: " <> inspect(part_1(parsed)))
-        IO.puts("Part 2: " <> inspect(part_2(parsed)))
-
-      {:error, reason} ->
-        IO.puts(reason)
-    end
+    parsed = File.read!("input.txt") |> String.split()
+    IO.puts("Part 1: " <> inspect(part_1(parsed)))
+    IO.puts("Part 2: " <> inspect(part_2(parsed)))
   end
 
   def part_1(parsed) do
@@ -28,27 +22,16 @@ defmodule Day01 do
   end
 
   def part_2(parsed) do
-    for(string <- parsed, do: insert(string))
-    |> part_1()
+    for(string <- parsed, do: insert(string)) |> part_1()
   end
 
-  @doc """
-  Inserts the number spelled out before their texutal occurence.
-  """
   def insert(""), do: ""
   def insert(string) do
-    case string do
-      "one" <> _rest -> "1"
-      "two" <> _rest -> "2"
-      "three" <> _rest -> "3"
-      "four" <> _rest -> "4"
-      "five" <> _rest -> "5"
-      "six" <> _rest -> "6"
-      "seven" <> _rest -> "7"
-      "eight" <> _rest -> "8"
-      "nine" <> _rest -> "9"
-      _ -> ""
-    end <>
+    map = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+    case Enum.find_index(map, fn word -> String.starts_with?(string, word) end) do
+      nil -> ""
+      n -> Integer.to_string(n + 1)
+    end <> # Inserts the number spelled out before the textual occurence.
       String.at(string, 0) <> insert(String.slice(string, 1..-1//1))
   end
 end
