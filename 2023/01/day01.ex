@@ -1,5 +1,6 @@
 defmodule Day01 do
-  def read() do
+
+  def start() do
     parsed = File.read!("input.txt") |> String.split()
     IO.puts("Part 1: " <> inspect(part_1(parsed)))
     IO.puts("Part 2: " <> inspect(part_2(parsed)))
@@ -32,4 +33,4 @@ defmodule Day01 do
   end
 end
 
-Day01.read()
+Day01.start()

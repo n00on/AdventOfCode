@@ -5,10 +5,10 @@ mkdir "$day";
 cd "$day";
 echo "defmodule Day$day do
   
-  def read() do
-    parsed = File.read!("input.txt") |> String.split()
-    IO.puts("Part 1: " <> inspect(part_1(parsed)))
-    IO.puts("Part 2: " <> inspect(part_2(parsed)))
+  def start() do
+    parsed = File.read!(\"input.txt\") |> String.split()
+    IO.puts(\"Part 1: \" <> inspect(part_1(parsed)))
+    IO.puts(\"Part 2: \" <> inspect(part_2(parsed)))
   end
 
   def part_1(parsed) do
@@ -21,7 +21,7 @@ echo "defmodule Day$day do
 
 end
 
-Day$day.read()
+Day$day.start()
 " > "day$day.ex";
 touch "input.txt";
 
