@@ -9,8 +9,9 @@ echo "defmodule Day$day do
       case File.read(\"input.txt\") do
       {:ok, binary} ->
         parsed = String.split(binary)
-        IO.puts(\"Part 1: #{part_1(parsed)}\")
-        IO.puts(\"Part 2: #{part_2(parsed)}\")
+        IO.puts(\"Part 1: \" <> inspect(part_1(parsed)))
+        IO.puts(\"Part 2: \" <> inspect(part_2(parsed)))
+
       {:error, reason} ->
         IO.puts(reason)
     end
@@ -29,3 +30,5 @@ end
 Day$day.read()
 " > "day$day.ex";
 touch "input.txt";
+
+echo "Created Day$day"
