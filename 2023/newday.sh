@@ -1,12 +1,11 @@
-#/bin/bash
+#!/bin/bash
 
 day="${1:-$(date +%d)}"
-mkdir "$day";
-cd "$day";
-echo "defmodule Day$day do
+
+program="defmodule Day$day do
   
   def start() do
-    parsed = File.read!(\"input.txt\") |> String.split()
+    parsed = File.read!(\"input.txt\") |> String.replace(\"\r\", \"\") |> String.split()
     IO.puts(\"Part 1: \" <> inspect(part_1(parsed)))
     IO.puts(\"Part 2: \" <> inspect(part_2(parsed)))
   end
@@ -22,7 +21,15 @@ echo "defmodule Day$day do
 end
 
 Day$day.start()
-" > "day$day.ex";
-touch "input.txt";
+"
 
-echo "Created Day$day"
+if [[ -d "$day" ]]; then
+  cd "$day";
+else
+  mkdir "$day";
+  cd "$day";
+  echo "$program" >> "day$day.ex";
+  echo "Created Day$day";
+fi
+
+touch "input.txt";
