@@ -7,9 +7,9 @@ defmodule Day06 do
   end
 
   def part_1(time_str, distance_str) do
-    times = time_str |> String.split() |> tl() |> Enum.map(&String.to_integer/1)
-    distances = distance_str |> String.split() |> tl() |> Enum.map(&String.to_integer/1)
-    for {t, d} <- Enum.zip(times, distances), reduce: 1 do
+    times = time_str |> String.split() |> tl() |> Stream.map(&String.to_integer/1)
+    distances = distance_str |> String.split() |> tl() |> Stream.map(&String.to_integer/1)
+    for {t, d} <- Stream.zip(times, distances), reduce: 1 do
       acc -> acc * ways_to_beat_record(t, d)
     end
   end
