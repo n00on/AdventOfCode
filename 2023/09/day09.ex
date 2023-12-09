@@ -25,18 +25,7 @@ defmodule Day09 do
 
   def part_2(parsed) do
     for series <- parsed, reduce: 0 do
-      acc -> acc + find_previous(series |> String.split() |> Enum.map(&String.to_integer/1))
-    end
-  end
-
-  def find_previous(values) do
-    diffs = for [v1, v2] <- Stream.chunk_every(values, 2, 1) do
-      v2 - v1
-    end
-    if Enum.all?(diffs, fn v -> v == 0 end) do
-      hd(values)
-    else
-      hd(values) - find_previous(diffs)
+      acc -> acc + find_next(series |> String.split() |> Enum.map(&String.to_integer/1) |> Enum.reverse())
     end
   end
 
