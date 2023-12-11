@@ -16,23 +16,23 @@ defmodule Day11 do
   end
 
   def find_empty_columns(image) do
-    for x <- 0..(length(Enum.at(image, 0))-1), reduce: [] do
-      list -> if Enum.all?(image, fn row -> Enum.at(row, x) != "#" end), do: [x | list], else: list
-    end
+    width = length(Enum.at(image, 0))
+    for x <- 0..(width - 1),
+        Enum.all?(image, fn row -> Enum.at(row, x) != "#" end),
+        do: x
   end
 
   def find_empty_rows(image) do
-    for {row, y} <- Stream.with_index(image), reduce: [] do
-      list -> if Enum.all?(row, fn pixel -> pixel != "#" end), do: [y | list], else: list
-    end
+    for {row, y} <- Stream.with_index(image),
+        Enum.all?(row, fn pixel -> pixel != "#" end),
+        do: y
   end
 
   def find_galaxies(image) do
     for {row, y} <- Stream.with_index(image), reduce: [] do
-      list -> 
-        (for {pixel, x} <- Stream.with_index(row), reduce: [] do
-          acc -> if pixel == "#", do: [{x, y} | acc], else: acc
-        end) ++ list
+      list -> list ++
+        (for {pixel, x} <- Stream.with_index(row), pixel == "#",
+          do: {x, y})
     end
   end
 
