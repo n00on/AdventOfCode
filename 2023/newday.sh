@@ -5,16 +5,16 @@ day="${1:-$(date +%d)}"
 program="defmodule Day$day do
   
   def start() do
-    parsed = File.read!(\"input.txt\") |> String.replace(\"\r\", \"\") |> String.split()
-    IO.puts(\"Part 1: \" <> inspect(part_1(parsed)))
-    IO.puts(\"Part 2: \" <> inspect(part_2(parsed)))
+    input = File.read!(\"input.txt\") |> String.replace(\"\r\", \"\") |> String.split()
+    IO.inspect(part_1(input), label: \"Part 1: \")
+    IO.inspect(part_2(input), label: \"Part 2: \")
   end
 
-  def part_1(parsed) do
+  def part_1(input) do
     :ok
   end
 
-  def part_2(parsed) do
+  def part_2(input) do
     :ok
   end
 
