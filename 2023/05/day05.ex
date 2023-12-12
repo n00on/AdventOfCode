@@ -2,7 +2,9 @@ defmodule Day05 do
 
   def start() do
     [seed_line | mappings] = File.read!("input.txt") |> String.replace("\r", "") |> String.split("\n\n")
-    mapping_funs = for m <- mappings, do: parse_mapping(tl(String.split(m, "\n")))
+    mapping_funs = for m <- mappings do
+      m |> String.split("\n") |> tl() |> parse_mapping()
+    end
     IO.puts("Part 1: " <> inspect(part_1(seed_line, mapping_funs)))
     IO.puts("Part 2: " <> inspect(part_2(seed_line, mapping_funs)))
   end

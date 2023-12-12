@@ -29,11 +29,11 @@ defmodule Day11 do
   end
 
   def find_galaxies(image) do
-    for {row, y} <- Stream.with_index(image), reduce: [] do
-      list -> list ++
-        (for {pixel, x} <- Stream.with_index(row), pixel == "#",
-          do: {x, y})
+    for {row, y} <- Stream.with_index(image) do
+      (for {pixel, x} <- Stream.with_index(row), pixel == "#",
+        do: {x, y})
     end
+    |> Enum.concat()
   end
 
   def find_all_distances(image, expansion \\ 2) do
@@ -51,7 +51,7 @@ defmodule Day11 do
   # how many in list are between l and r
   def in_range(list, r, l) when r > l, do: in_range(list, l, r)
   def in_range(list, l, r) do
-    list |> Enum.filter(fn val -> l < val and val < r end) |> length()
+    list |> Enum.count(fn val -> l < val and val < r end)
   end
 
 end
