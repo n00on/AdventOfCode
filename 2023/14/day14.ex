@@ -8,21 +8,13 @@ defmodule Day14 do
   end
 
   def part_1(input) do
-    map = for _ <- 0..4000 do
-      roll_north(input, 1)
-    end
-    map = roll_north(input, 1)
-    for y <- 0..(tuple_size(map) - 1), reduce: 0 do
-      sum ->
-        sum + (tuple_size(map) - y) * Enum.count(elem(map, y) |> Tuple.to_list, fn cell -> cell == "O" end)
-    end
+    roll_north(input, 1)
+    |> get_north_beam()
   end
 
   def roll_north(map, y) when tuple_size(map) == y, do: map
   def roll_north(map, y) do
-    #IO.inspect(map)
-    row = elem(map, y)
-    for x <- 0..(tuple_size(row)-1), reduce: map do
+    for x <- 0..(length(at(map, y))-1), reduce: map do
       acc ->
         if at(acc, x, y) == "O" do
           yn = roll_cell(acc, y, x)
@@ -43,8 +35,32 @@ defmodule Day14 do
     end
   end
 
+  def get_north_beam(map) do
+    for {row, y} <- Stream.with_index(map), reduce: 0 do
+      sum -> sum + (length(map) - y) * Enum.count(row, fn cell -> cell == "O" end)
+    end
+  end
+
   def part_2(input) do
-    :ok
+    {map, hist} = Enum.reduce_while(1..1000000000, {input, []}, fn _, {map, hist} ->
+      new_map = roll_cycle(map)
+      if new_map in hist do
+        {:halt, {new_map, hist}} # found cycle
+      else
+        {:cont, {new_map, [new_map | hist]}}
+      end
+    end)
+    cycle_length = Enum.find_index(hist, fn m -> m == map end) + 1
+    cycle_rem = rem(1000000000 - length(hist), cycle_length)
+    get_north_beam(Enum.at(hist, cycle_length - cycle_rem))
+  end
+
+  def roll_cycle(map) do
+    map
+    |> roll_north(1) |> transpose()
+    |> roll_north(1) |> transpose()
+    |> roll_north(1) |> transpose()
+    |> roll_north(1) |> transpose()
   end
 
   def at(map, x, y) do
@@ -52,9 +68,16 @@ defmodule Day14 do
   end
 
   def update(map, x, y, xn, yn) do
-    #IO.inspect({map, x, y, xn, yn})
-    map |> put_elem(y, put_elem(elem(map, y), x, "."))
-    |> put_elem(yn, put_elem(elem(map, yn), xn, "O"))
+    map
+    |> List.replace_at(y, List.replace_at(Enum.at(map, y), x, "."))
+    |> List.replace_at(yn, List.replace_at(Enum.at(map, yn), xn, "O"))
+  end
+
+  def transpose(rows) do
+    rows
+    |> List.zip
+    |> Stream.map(&Tuple.to_list/1)
+    |> Enum.map(&Enum.reverse/1)
   end
 
 end
