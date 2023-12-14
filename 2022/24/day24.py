@@ -41,7 +41,7 @@ def getBlizzardPosition(i : int, x : int, y : int, dir : str) -> (int):
             y = (y-1 - i) % (height-2) + 1
     return y, x
 
-def getNextPositions(pos : list[(int)], board : list[list[bool]]) -> list[(int)]:
+def getNextPositions(pos : list[(int)], board : list[list[bool]]) -> set[(int)]:
     nextpos = set()
     for y, x in pos:
         for yd, xd in directions:

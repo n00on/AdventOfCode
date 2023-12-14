@@ -52,18 +52,29 @@ def integrate(connections : dict, newcons : dict):
     
 #print(valves)
 valves = red(valves)
-#print(valves)
+print(valves)
 
-def findPressure(pos : list[str], minutes : list[int], q : set) -> int:
+def findPressure(pos : list, minutes : list, q : set) -> int:
+    print(len(valves))
     if (minutes[0] <= 1 and minutes[1] <= 1) or len(q) == len(valves):
         return 0
 
     turn = 0 if minutes[0] >= minutes[1] else 1
     vname = pos[turn]
     valve = valves[vname]
-    pressure = (minutes[turn]) * valve[0]
-    best = 0
+    candidates = getSub(pos, turn, minutes, q)
+    if vname not in q:
+        minutes[turn] -= 1
+        q.add(vname)
+        candidates += [(minutes[turn]) * valve[0] + i for i in getSub(pos, turn, minutes, q)]
+        q.discard(vname)
+    
+    if len(candidates) == 0: return 0
+    return max(candidates)
 
+def getSub(pos, turn, minutes, q):
+    result = []
+    valve = valves[pos[turn]]
     for v in valve[1]:
         if v in q:
             continue
@@ -71,9 +82,7 @@ def findPressure(pos : list[str], minutes : list[int], q : set) -> int:
         pos1[turn] = v
         mins1 = [m for m in minutes]
         mins1[turn] -= valve[1][v]
-        q.add(v)
-        best += max(best, findPressure(pos1, mins1, q))
-        q.remove(v)
-    return best
-    
+        result.append(findPressure(pos1, mins1, q))
+    return result
+
 print(findPressure(['AA', 'AA'], [26,26], set(['AA'])))
