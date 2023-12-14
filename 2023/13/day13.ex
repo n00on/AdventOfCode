@@ -8,32 +8,39 @@ defmodule Day13 do
   end
 
   def part_1(input) do
-    (input |> Stream.map(&col_mirror/1)
+    get_result(input)
+  end
+
+  def get_result(input, smudge \\ 0) do
+    (input |> Stream.map(fn p -> col_mirror(p, smudge) end)
     |> Enum.sum) + 100 *
-    (input |> Stream.map(&row_mirror/1)
+    (input |> Stream.map(fn p -> row_mirror(p, smudge) end)
     |> Enum.sum)
   end
 
-  def row_mirror(pattern) do
+  def row_mirror(pattern, smudge \\ 0) do
     height = length(pattern)
     rows = (for y <- 1..(height - 1) do
       range = min(height - y, y) - 1
-      #IO.inspect({0..range, (y-range-1)..(y+range)})
-      Enum.all?(0..range, fn i -> Enum.at(pattern, y-i - 1) == Enum.at(pattern, y+i) end)
+      Enum.map(0..range, fn i ->
+        Enum.zip(Enum.at(pattern, y-i - 1), Enum.at(pattern, y+i))
+        |> Enum.count(fn {a, b} -> a != b end)
+      end)
+      |> Enum.sum()
     end
-    |> Enum.find_index(fn b -> b end))
+    |> Enum.find_index(fn c -> smudge == c end))
     if rows, do: rows + 1, else: 0
   end
 
-  def col_mirror(pattern) do
+  def col_mirror(pattern, smudge \\ 0) do
     pattern
     |> Stream.zip()
     |> Enum.map(&Tuple.to_list/1)
-    |> row_mirror()
+    |> row_mirror(smudge)
   end
 
   def part_2(input) do
-    :ok
+    get_result(input, 1)
   end
 
 end
