@@ -8,47 +8,75 @@ defmodule Day16 do
   end
 
   def part_1(input) do
-    run(input, [{{0,0}, {1,0}}])
-    |> Stream.map(fn {{x, y}, _} -> {x,y} end)
-    |> Stream.filter(fn {x,y} -> x >= 0 and y >= 0
-        and x < tuple_size(elem(input, 0)) and y < tuple_size(input) end)
-    |> Enum.uniq() #|> IO.inspect()
-    |> length()
+    input
+    |> step({{0,0}, {1,0}})
+    |> elem(0)
+    |> covered()
   end
 
-  def run(map, beams, hist \\ []) do
-    if Enum.all?(beams, fn beam -> beam in hist end) do
-      hist
+  def step(map, beam, lookup \\ %{}) do
+    case Map.get(lookup, beam) do
+      nil ->
+        lookup = Map.put(lookup, beam, [beam])
+        {{x, y}, {xdir, ydir}} = beam
+        {list, lookup} = case at(map, x, y) do
+          "."  -> insert(map, {{x+xdir, y+ydir}, {xdir ,  ydir}}, lookup)
+          "/"  -> insert(map, {{x-ydir, y-xdir}, {-ydir, -xdir}}, lookup)
+          "\\" -> insert(map, {{x+ydir, y+xdir}, { ydir,  xdir}}, lookup)
+          "|"  ->
+            if xdir == 0 do
+              insert(map, {{x+xdir, y+ydir}, {xdir, ydir}}, lookup)
+            else
+              {list1, lookup} = insert(map, {{x, y+1},{0, 1}}, lookup)
+              {list2, lookup} = insert(map, {{x, y-1},{0, -1}}, lookup)
+              {list1 ++ list2, lookup}
+            end
+          "-"  ->
+            if ydir == 0 do
+              insert(map, {{x+xdir, y+ydir}, {xdir, ydir}}, lookup)
+            else
+              {list1, lookup} = insert(map, {{x+1, y},{1, 0}}, lookup)
+              {list2, lookup} = insert(map, {{x-1, y},{-1, 0}}, lookup)
+              {list1 ++ list2, lookup}
+            end
+        end
+        list = [beam | list]
+        {list, Map.put(lookup, beam, list)}
+      list ->
+        {[beam | list], lookup}
+      end
+  end
+
+  def insert(map, item, lookup) do
+    {x, y} = elem(item, 0)
+    if x >= tuple_size(elem(map,0)) or  x < 0 or y >= tuple_size(map) or  y < 0 do
+      {[], lookup}
     else
-      new_beams = Stream.map(beams, fn beam -> step(map, beam) end) |> Stream.concat() |> Enum.uniq()
-      run(map, new_beams, beams ++ hist)
-    end
-  end
-
-  def step(map, {{x, _}, _}) when x >= tuple_size(elem(map,0)) or  x < 0, do: []
-  def step(map, {{_, y}, _}) when y >= tuple_size(map) or  y < 0, do: []
-  def step(map, {{x, y}, {xdir, ydir}}) do
-    case at(map, x, y) do
-      "."  -> [{{x+xdir, y+ydir}, {xdir ,  ydir}}]
-      "/"  -> [{{x-ydir, y-xdir}, {-ydir, -xdir}}]
-      "\\" -> [{{x+ydir, y+xdir}, { ydir,  xdir}}]
-      "|"  ->
-        if xdir == 0 do
-          [{{x+xdir, y+ydir}, {xdir, ydir}}]
-        else
-          [{{x, y+1},{0, 1}}, {{x, y-1},{0, -1}}]
-        end
-      "-"  ->
-        if ydir == 0 do
-          [{{x+xdir, y+ydir}, {xdir, ydir}}]
-        else
-          [{{x+1, y},{1, 0}}, {{x-1, y},{-1, 0}}]
-        end
+      step(map, item, lookup)
     end
   end
 
   def part_2(input) do
-    :ok
+    max(
+    for y <- 0..(tuple_size(input) - 1), reduce: 0 do
+      max ->
+        step(input, {{0,y}, {1, 0}}) |> elem(0) |> covered()
+        |> max(step(input, {{tuple_size(elem(input, 0)) - 1,y}, {-1, 0}}) |> elem(0) |> covered())
+        |> max(max)
+    end,
+    for x <- 0..(tuple_size(elem(input, 0)) - 1), reduce: 0 do
+      max ->
+        step(input, {{x,0}, {0, 1}}) |> elem(0) |> covered()
+        |> max(step(input, {{x,tuple_size(input) - 1}, {0, -1}}) |> elem(0) |> covered())
+        |> max(max)
+    end)
+  end
+
+  def covered(hist) do
+    hist
+    |> Stream.map(fn {{x, y}, _} -> {x,y} end)
+    |> Enum.uniq()
+    |> length()
   end
 
   def at(map, x, y) do
