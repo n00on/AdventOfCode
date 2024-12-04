@@ -3,7 +3,7 @@ main = do
     input <- lines <$> readFile "input.txt"
     print $ part1 input
 
-    --print $ diagonals input
+    print $ part2 input
 
 part1 :: [String] -> Int
 part1 input = sum $ map testString 
@@ -26,3 +26,19 @@ testString [] = 0
 testString ('X':'M':'A':'S':r) = 1 + testString ('S':r)
 testString ('S':'A':'M':'X':r) = 1 + testString ('X':r)
 testString (_:r) = testString r
+
+part2 :: [String] -> Int
+part2 []         = 0
+part2 ss@(_:ss') = testX ss + part2 ss'
+
+testX :: [String] -> Int
+testX (r1@('M':_:'M':_) : r2@(_:'A':_) : r3@('S':_:'S':_) : r)
+    = 1 + testX (tail r1 : tail r2 : tail r3 :r)
+testX (r1@('M':_:'S':_) : r2@(_:'A':_):r3@('M':_:'S':_):r)
+    = 1 + testX (tail r1 : tail r2 : tail r3 :r)
+testX (r1@('S':_:'M':_):r2@(_:'A':_):r3@('S':_:'M':_):r)
+    = 1 + testX (tail r1 : tail r2 : tail r3 :r)
+testX (r1@('S':_:'S':_):r2@(_:'A':_):r3@('M':_:'M':_):r)
+    = 1 + testX (tail r1 : tail r2 : tail r3 :r)
+testX (r1@(_:_):r2@(_:_):r3@(_:_):r) = testX (tail r1 : tail r2 : tail r3 :r)
+testX _ = 0
