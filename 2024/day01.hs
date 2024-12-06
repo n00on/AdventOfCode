@@ -1,7 +1,7 @@
 import Data.List (sort)
 
 main = do 
-    input <- readFile "input.txt"
+    input <- readFile "input/01.txt"
     let (xs, ys) = unzip $ map toTuple $ lines input
     print $ part1 xs ys
     print $ part2 xs ys

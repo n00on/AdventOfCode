@@ -1,7 +1,7 @@
 import Data.List (sortBy)
 
 main = do
-    (por, updates) <- span (/="") . lines <$> readFile "input.txt"
+    (por, updates) <- span (/="") . lines <$> readFile "input/05.txt"
     print $ part1 (readPOR por) (readUpdates $ tail updates)
     print $ part2 (readPOR por) (readUpdates $ tail updates)
 

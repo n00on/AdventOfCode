@@ -1,6 +1,6 @@
 
 main = do
-    input <- lines <$> readFile "input.txt"
+    input <- lines <$> readFile "input/04.txt"
     print $ part1 input
 
     print $ part2 input

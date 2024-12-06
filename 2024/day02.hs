@@ -1,6 +1,6 @@
 
 main = do
-    reports <- parse <$> readFile "input.txt"
+    reports <- parse <$> readFile "input/02.txt"
     print $ part1 reports
     print $ part2 reports
 

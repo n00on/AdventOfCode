@@ -1,7 +1,7 @@
 import Text.Read (readMaybe)
 
 main = do
-    input <- readFile "input.txt"
+    input <- readFile "input/03.txt"
     print $ part1 input
     print $ part2 True input
 
