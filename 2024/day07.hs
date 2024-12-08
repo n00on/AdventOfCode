@@ -5,7 +5,7 @@ main = do
     print $ part2 eqs
 
 readEQ :: [String] -> (Int, [Int])
-readEQ (r:os) = (read (take (length r - 1) r), map read os)
+readEQ (r:os) = (read (init r), map read os)
 
 part1 :: [(Int, [Int])] -> Int
 part1 = sum . map fst . filter (checkEQ [(*), (+)])
